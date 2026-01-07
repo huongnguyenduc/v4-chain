@@ -39,3 +39,25 @@ proposals/
 .idea/
 *.iml
 __debug_bin
+
+# Generated node directories from init-nodes.sh
+node0/
+node1/
+node2/
+node3/
+node*/
+
+# Generated Docker setup files
+docker/genesis/genesis.json
+docker/keys/*
+!docker/keys/.gitkeep
+docker/node-keys/*
+!docker/node-keys/.gitkeep
+docker/validator-keys/*
+!docker/validator-keys/.gitkeep
+
+# Keep directory structure but ignore generated files
+!docker/genesis/
+!docker/keys/
+!docker/node-keys/
+!docker/validator-keys/

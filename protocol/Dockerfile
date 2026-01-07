@@ -48,11 +48,24 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 FROM golang@sha256:${GOLANG_1_23_ALPINE_DIGEST}
 
-RUN apk add --no-cache bash
+# Install runtime dependencies
+RUN apk add --no-cache bash curl jq ca-certificates
 
+# Copy binary from builder
 COPY --from=builder /dydxprotocol/build/dydxprotocold /bin/dydxprotocold
 
+# Copy startup scripts
+COPY docker/entrypoint.sh /opt/dydxprotocol/bin/entrypoint.sh
+
+# Make scripts executable
+RUN chmod +x /opt/dydxprotocol/bin/entrypoint.sh
+
+# Create directories
+RUN mkdir -p /dydxprotocol/chain /opt/dydxprotocol/bin && \
+    chmod -R 755 /dydxprotocol /opt/dydxprotocol
+
 ENV HOME /dydxprotocol
+ENV PATH="/opt/dydxprotocol/bin:${PATH}"
 WORKDIR $HOME
 
 # tendermint p2p
@@ -64,4 +77,10 @@ EXPOSE 1317
 # grpc
 EXPOSE 9090
 
-ENTRYPOINT ["dydxprotocold"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:26657/health || exit 1
+
+# Default command
+ENTRYPOINT ["/opt/dydxprotocol/bin/entrypoint.sh"]
+CMD ["start"]

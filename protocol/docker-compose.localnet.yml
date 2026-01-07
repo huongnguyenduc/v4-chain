@@ -1,0 +1,209 @@
+services:
+  # dYdX Protocol validator node 1
+  dydxprotocol-node0:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local:dydxprotocol
+    container_name: dydxprotocol-node0
+    ports:
+      - "26656:26656"  # P2P
+      - "26657:26657"  # RPC
+      - "1317:1317"    # REST API
+      - "9090:9090"    # gRPC
+    volumes:
+      - node0_data:/dydxprotocol/chain/.dydxprotocol-node0
+      - ./docker/genesis:/opt/dydxprotocol/genesis
+      - ./docker/keys:/opt/dydxprotocol/keys:ro
+      - ./docker/node-keys:/opt/dydxprotocol/node-keys:ro
+      - ./docker/validator-keys:/opt/dydxprotocol/validator-keys:ro
+    environment:
+      - CHAIN_ID=dydxprotocol-testnet
+      - MONIKER=dydxprotocol-node0
+      - KEYRING_BACKEND=test
+      - LOG_LEVEL=info
+      - VALIDATOR_KEY=validator0
+      - EXTERNAL_ADDRESS=dydxprotocol-node0:26656
+      - PERSISTENT_PEERS=74261ae58bb62171b848479d5d9d17c038095d2d@dydxprotocol-node1:26656,a4bf18a7f352beea0f8f968ba5421871fd0886b2@dydxprotocol-node2:26656,a93ed4a9cea914688d6625d152576203891282a8@dydxprotocol-node3:26656
+    networks:
+      - dydxprotocol-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:26657/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # dYdX Protocol validator node 2
+  dydxprotocol-node1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local:dydxprotocol
+    container_name: dydxprotocol-node1
+    ports:
+      - "26756:26656"  # P2P
+      - "26757:26657"  # RPC
+      - "1417:1317"    # REST API
+      - "9190:9090"    # gRPC
+    volumes:
+      - node1_data:/dydxprotocol/chain/.dydxprotocol-node1
+      - ./docker/genesis:/opt/dydxprotocol/genesis
+      - ./docker/keys:/opt/dydxprotocol/keys:ro
+      - ./docker/node-keys:/opt/dydxprotocol/node-keys:ro
+      - ./docker/validator-keys:/opt/dydxprotocol/validator-keys:ro
+    environment:
+      - CHAIN_ID=dydxprotocol-testnet
+      - MONIKER=dydxprotocol-node1
+      - KEYRING_BACKEND=test
+      - LOG_LEVEL=info
+      - VALIDATOR_KEY=validator1
+      - EXTERNAL_ADDRESS=dydxprotocol-node1:26656
+      - PERSISTENT_PEERS=1856a55b90349a45378262b74ceca1b577497531@dydxprotocol-node0:26656,a4bf18a7f352beea0f8f968ba5421871fd0886b2@dydxprotocol-node2:26656,a93ed4a9cea914688d6625d152576203891282a8@dydxprotocol-node3:26656
+    depends_on:
+      dydxprotocol-node0:
+        condition: service_healthy  
+    networks:
+      - dydxprotocol-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:26657/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # dYdX Protocol validator node 3
+  dydxprotocol-node2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local:dydxprotocol
+    container_name: dydxprotocol-node2
+    ports:
+      - "26856:26656"  # P2P
+      - "26857:26657"  # RPC
+      - "1517:1317"    # REST API
+      - "9290:9090"    # gRPC
+    volumes:
+      - node2_data:/dydxprotocol/chain/.dydxprotocol-node2
+      - ./docker/genesis:/opt/dydxprotocol/genesis
+      - ./docker/keys:/opt/dydxprotocol/keys:ro
+      - ./docker/node-keys:/opt/dydxprotocol/node-keys:ro
+      - ./docker/validator-keys:/opt/dydxprotocol/validator-keys:ro
+    environment:
+      - CHAIN_ID=dydxprotocol-testnet
+      - MONIKER=dydxprotocol-node2
+      - KEYRING_BACKEND=test
+      - LOG_LEVEL=info
+      - VALIDATOR_KEY=validator2
+      - EXTERNAL_ADDRESS=dydxprotocol-node2:26656
+      - PERSISTENT_PEERS=1856a55b90349a45378262b74ceca1b577497531@dydxprotocol-node0:26656,74261ae58bb62171b848479d5d9d17c038095d2d@dydxprotocol-node1:26656,a93ed4a9cea914688d6625d152576203891282a8@dydxprotocol-node3:26656
+    depends_on:
+      dydxprotocol-node0:
+        condition: service_healthy
+    networks:
+      - dydxprotocol-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:26657/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # dYdX Protocol validator node 4
+  dydxprotocol-node3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local:dydxprotocol
+    container_name: dydxprotocol-node3
+    ports:
+      - "26956:26656"  # P2P
+      - "26957:26657"  # RPC
+      - "1617:1317"    # REST API
+      - "9390:9090"    # gRPC
+    volumes:
+      - node3_data:/dydxprotocol/chain/.dydxprotocol-node3
+      - ./docker/genesis:/opt/dydxprotocol/genesis
+      - ./docker/keys:/opt/dydxprotocol/keys:ro
+      - ./docker/node-keys:/opt/dydxprotocol/node-keys:ro
+      - ./docker/validator-keys:/opt/dydxprotocol/validator-keys:ro
+    environment:
+      - CHAIN_ID=dydxprotocol-testnet
+      - MONIKER=dydxprotocol-node3
+      - KEYRING_BACKEND=test
+      - LOG_LEVEL=info
+      - VALIDATOR_KEY=validator3
+      - EXTERNAL_ADDRESS=dydxprotocol-node3:26656
+      - PERSISTENT_PEERS=1856a55b90349a45378262b74ceca1b577497531@dydxprotocol-node0:26656,74261ae58bb62171b848479d5d9d17c038095d2d@dydxprotocol-node1:26656,a4bf18a7f352beea0f8f968ba5421871fd0886b2@dydxprotocol-node2:26656
+    depends_on:
+      dydxprotocol-node0:
+        condition: service_healthy
+    networks:
+      - dydxprotocol-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:26657/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Monitoring and observability
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dydxprotocol-prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - dydxprotocol-network
+    restart: unless-stopped
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dydxprotocol-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - dydxprotocol-network
+    restart: unless-stopped
+
+volumes:
+  node0_data:
+    driver: local
+  node1_data:
+    driver: local
+  node2_data:
+    driver: local
+  node3_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  dydxprotocol-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+
